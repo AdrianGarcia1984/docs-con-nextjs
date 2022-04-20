@@ -1,0 +1,61 @@
+html,
+body {
+  background-color: #f6f6f6;
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+:root {
+  --inpec2: #6c757d;
+  --inpec: #ced4da;
+
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.pdf-container{
+  border: '1px solid rgba(0, 0, 0, 0.3)';
+  height: 300px
+}
+
+.btn-primary{
+  background-color: rgb(12 74 110)!important;
+}
+
+
+.recaptcha{
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+.bodyNoroeste{
+  background-image: url("../public/bannerRnoroeste.jpg");
+  background-color: #f6f6f6;
+  background-size: 100% 100%;
+}
+
+.bg-inpec{
+  background-color: var(--inpec) !important;
+  background: hsla(210, 14%, 83%, 1);
+
+background: linear-gradient(90deg, hsla(210, 14%, 83%, 1) 0%, hsla(208, 7%, 46%, 1) 100%, hsla(210, 14%, 83%, 1) 100%);
+
+background: -moz-linear-gradient(90deg, hsla(210, 14%, 83%, 1) 0%, hsla(208, 7%, 46%, 1) 100%, hsla(210, 14%, 83%, 1) 100%);
+
+background: -webkit-linear-gradient(90deg, hsla(210, 14%, 83%, 1) 0%, hsla(208, 7%, 46%, 1) 100%, hsla(210, 14%, 83%, 1) 100%);
+
+filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#CED4DA", endColorstr="#6C757D", GradientType=1 );
+}
+
+.navbar-inpec{background-color: var(--inpec) !important;}
+
