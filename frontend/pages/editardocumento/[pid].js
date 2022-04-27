@@ -10,14 +10,15 @@ import Swal from 'sweetalert2';
 import Link from 'next/link'
 import { Loading } from '../../component/Loading';
 import banner from '../../public/bannerNoroestePresentacion.png'
-import next from 'next';
+import { getTokenCookie } from '../../src/libs/cookieAuth';
 
 const editardocumento = () => {
 
     const router = useRouter();
     //extraer del usercontext
-    const { user,isUserAuthenticated } = useUser();
-    const options = { headers: { authorization: "Bearer " + user.token } }
+    const { user } = useUser();
+    const tokenCookie =getTokenCookie()
+    const options = { headers: { authorization: "Bearer " + tokenCookie } }
     const { query: { pid } } = router;
     const [loading, setLoading] = useState(false);
     const inicialState = {
@@ -31,8 +32,6 @@ const editardocumento = () => {
     const [stateDocument, setStateDocument] = useState(inicialState)
 
     useEffect(() => {
-        console.log(isUserAuthenticated())
-        !isUserAuthenticated() ? (router.push("/")) : 
         pid ? listarDocumentoId() : setStateDocument(inicialState)
     }, [pid])// eslint-disable-next-line
 

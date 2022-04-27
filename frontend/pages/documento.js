@@ -1,5 +1,5 @@
 import { Layout } from '../component/Layout'
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import '../styles/tailwind.config'
 import { useUser } from "../src/context/userContext";
 import { Loading } from '../component/Loading';
@@ -10,14 +10,14 @@ import axios from 'axios';
 import { formData } from '../src/helpers/formData';
 import Link from 'next/link'
 import banner from '../public/bannerNoroestePresentacion.png'
-import next from 'next';
+
 
 
 
 const documento = () => {
     const router = useRouter();
     //extraer del usercontext
-    const { user ,isUserAuthenticated} = useUser();
+    const { user} = useUser();
     const options = { headers: { authorization: "Bearer " + user.token } }
     const inicialState = {
         oficio: '',
@@ -29,11 +29,6 @@ const documento = () => {
     }
     const [stateDocument, setStateDocument] = useState(inicialState)
     const [loading, setLoading] = useState(false);
-
-
-    useEffect(() => {
-        isUserAuthenticated() ? next : router.push("/");    
-    }, [])
     
 
     const guardarDocumento = async (datos) => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Layout } from '../component/Layout'
 import '../styles/tailwind.config'
 import { useUser } from "../src/context/userContext";
@@ -7,6 +7,7 @@ import { useRouter } from 'next/router';
 import { useFormik } from 'formik'
 import * as Yup from "yup"
 import banner from '../public/bannerNoroestePresentacion.png'
+
 
 
 
@@ -19,8 +20,8 @@ const login = () => {
 
     const formik = useFormik({
         initialValues: {
-            identificacion: '',
-            password: ''
+            identificacion: '7184978',
+            password: '12345'
         },
         validationSchema: Yup.object({
             identificacion: Yup.number()
@@ -29,14 +30,10 @@ const login = () => {
                 .required('el password es obligatorio '),
         }),
         onSubmit: async valores => {
-            // const { identificacion, password } = valores
-            // console.log(valores)
-            // const user = { identificacion, password };
-            loginUser(valores, router);
+            loginUser(valores, router);        
 
         }
     })
-
 
     return (
 
@@ -50,7 +47,7 @@ const login = () => {
                                 src={banner.src}
                                 alt="banner noroeste"
                             />
-                            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">ingreso usuario</h2>
+                            <h2 className="mb-2 font-mono font-bold justify-content-center text-center text-gray-700 sm:font-ligth text-2xl md:text-3xl lg:text-4xl">ingreso usuario</h2>
                         </div>
                         <form className="mt-8 space-y-6" action="#" method="POST" onSubmit={formik.handleSubmit}>
                             <input type="hidden" name="remember" defaultValue="true" />
@@ -61,7 +58,6 @@ const login = () => {
                                     </label>
                                     <input
                                         id="identificacion"
-                                        //name="identificacion"
                                         type="number"
                                         autoComplete="identificacion"
                                         value={formik.values.identificacion} onChange={formik.handleChange} onBlur={formik.handleBlur}
@@ -80,9 +76,7 @@ const login = () => {
                                     </label>
                                     <input
                                         id="password"
-                                        //name="password"
                                         type="password"
-                                        //autoComplete="current-password"
                                         required
                                         value={formik.values.password} onChange={formik.handleChange} onBlur={formik.handleBlur}
                                         className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-sky-500 focus:border-sky-500 focus:z-10 sm:text-sm"

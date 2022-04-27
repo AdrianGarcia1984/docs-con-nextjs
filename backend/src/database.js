@@ -5,7 +5,7 @@ require('dotenv').config()
 //URLDB para local
 
 
-mongoose.connect(process.env.URLDB,{
+mongoose.connect(process.env.URLDBATLAS,{
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(db => console.log('base de datos conectada',db.connection.name))

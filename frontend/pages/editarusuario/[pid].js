@@ -10,6 +10,7 @@ import { Loading } from '../../component/Loading';
 import { Formik } from 'formik'
 import * as Yup from "yup"
 import banner from '../../public/bannerNoroestePresentacion.png'
+import { getTokenCookie } from '../../src/libs/cookieAuth';
 
 
 const editarusuario = () => {
@@ -17,7 +18,8 @@ const editarusuario = () => {
     const router = useRouter();
     //extraer del usercontext
     const { user } = useUser();
-    const options = { headers: { authorization: "Bearer " + user.token } }
+    const tokenCookie =getTokenCookie()
+  const options = { headers: { authorization: "Bearer " + tokenCookie } }
     const { query: { pid } } = router;
     const [loading, setLoading] = useState(false);
     const inicialState = {

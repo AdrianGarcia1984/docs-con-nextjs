@@ -3,32 +3,23 @@ import '../styles/globals.css'
 import axios from "axios";
 import 'rc-pagination/assets/index.css';
 //import { SessionProvider } from 'next-auth/react'
-
-//pruebas con 
+import React from 'react';
+//pruebas con redux
+import { Provider } from 'react-redux'
+import store from '../src/store'
 
 
 axios.defaults.baseURL = "http://localhost:4000/"
 //axios.defaults.baseURL=" https://backend-adr.herokuapp.com/"
 
 
-//para pruebas con next auth
-// function MyApp({ Component, pageProps: { session, ...pageProps } }) {
-//   return (
-//     <SessionProvider session={session}>
-//       <UserProvider>
-//         <Component {...pageProps} />
-//       </UserProvider>
-//     </SessionProvider>
-
-//   )
-// }
-
-function MyApp({ Component, pageProps}) {
-  return (    
-      <UserProvider>
-        <Component {...pageProps} />
-      </UserProvider>
+function MyApp({ Component, pageProps }) {
+  return (
+    <Provider store={store}>       
+    <UserProvider>        
+      <Component {...pageProps} />
+    </UserProvider>
+    </Provider>
   )
 }
-
-export default MyApp
+ export default MyApp

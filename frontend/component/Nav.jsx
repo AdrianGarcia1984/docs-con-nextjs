@@ -1,14 +1,19 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useUser } from '../src/context/userContext';
 import Link from 'next/link'
 import banner from '../public/bannerNoroestePresentacion.png'
-
+import { getUser } from '../src/store/slice/user'
+import { useDispatch, useSelector } from 'react-redux'
 
 export const Nav = () => {
   const { user, exit } = useUser();
-  const logout = ()=>{
-    
-  }
+  const { nombre, apellido, roles } = useSelector(state => state.users)
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(getUser())
+  }, [dispatch])  
+ 
 
   return (
     <>
@@ -30,12 +35,15 @@ export const Nav = () => {
                     </li>
                     <li className="nav-item dropdown">
                       <a className="nav-link dropdown-toggle fw-bold" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        {`${user.nombre} ${user.apellido}`}
+                        {`${nombre} ${apellido}`}
                       </a>
                       <ul className="dropdown-menu fw-bold" aria-labelledby="navbarDropdown">
                         <li><Link href="/controlDocumentos"><a className="dropdown-item fw-bold" >documentos</a></Link></li>
-                        <li><Link href="/usuarios"><a className="dropdown-item fw-bold" >usuarios</a></Link></li>
-                        <li><hr className="dropdown-divider" /></li>
+                        {roles==='admin'&&<>
+                          <li><Link href="/usuarios"><a className="dropdown-item fw-bold" >usuarios</a></Link></li>
+                          </>  }
+                          <li><hr className="dropdown-divider" /></li>
+                        
                         <li><Link href='/'><a className="dropdown-item fw-bold" onClick={() => exit()}>cerrar sesion</a></Link></li>
                       </ul>
                     </li>
@@ -44,18 +52,17 @@ export const Nav = () => {
 
                     <>
                       <li className="nav-item text-decoration-none">
-                        <Link href="/login"><a className="nav-link text-decoration-none fw-bold" aria-current="page">login</a></Link>
+                        <Link href="/login"><a className="nav-link text-decoration-none fw-bold" aria-current="page">Ingresar</a></Link>
                       </li>
-                      <li className="nav-item text-decoration-none">
+                      {/* <li className="nav-item text-decoration-none">
                         <Link href="/api/auth/signin"><a className="nav-link text-decoration-none" aria-current="page">login con nextAuth</a></Link>
-                      </li>
+                      </li> */}
                     </>
                   )}
               </>
             </ul>
           </div>
         </div>
-
       </nav>
     </>
   )

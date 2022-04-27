@@ -1,24 +1,19 @@
 import { Layout } from '../component/Layout'
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import ReCAPTCHA from "react-google-recaptcha";
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import { useUser } from '../src/context/userContext';
 import { Pdf } from '../component/Pdf'
 import '../styles/tailwind.config'
 import { Loading } from '../component/Loading';
 import banner from '../public/bannerNoroestePresentacion.png'
-//import { useSession } from 'next-auth/react';
 
 
 export default function Home() {
 
-// const {data:session} = useSession()
-// console.log(session)
 
     const sitekey = '6Lc51gofAAAAAKJBy3L96a9RY6CStP7AnJDjGWPt'
-    const { user } = useUser();
-    const options = { headers: { authorization: "Bearer " + user.token } }
+    
     const inicialState = {
         oficio: '',
         fecha: '',
@@ -28,34 +23,27 @@ export default function Home() {
     const [stateDocument, setStateDocument] = useState(inicialState)
     const [stateMostrar, setStateMostrar] = useState(inicialState)
     const [loading, setLoading] = useState(false);
-    const [enable, setEnable] = useState('')
     const [border, setBorder] = useState('disabled')
 
+
     const listarDocumentoId = async (datos) => {
-        //console.log(datos)
         try {
             setLoading(true);
-            const { data } = await axios.post('/api/documento/consultar/', datos, options)
-            console.log(data.data[0].oficio)
+            const { data } = await axios.post('/api/documento/consultar/', datos)
             setStateMostrar(data.data[0])
-            //console.log(stateMostrar)
             setLoading(false);
         } catch (error) {
             setLoading(false);
             if (error.response === undefined) {
-                //console.log('error')
                 return Swal.fire({
-                  icon: 'error',
-                  title: 'Upss, parece que nuestro servidor no responde, intentelo mas tarde, o contacte a soporte tecnico',
-                  showConfirmButton: true,
-                  confirmButtonText: 'OK',
-                  confirmButtonColor: 'rgb(12 74 110)',
-                  //timer: 2500,
+                    icon: 'error',
+                    title: 'Upss, parece que nuestro servidor no responde, intentelo mas tarde, o contacte a soporte tecnico',
+                    showConfirmButton: true,
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: 'rgb(12 74 110)',
                 });
-              }
-            //console.log(error.response.data)
+            }
             if (!error.response.data.ok) {
-                //error.response.data.ok === false && (setDisableBoton(false))
                 return Swal.fire({
                     icon: 'error',
                     title: error.response.data.message,
@@ -70,7 +58,6 @@ export default function Home() {
         setStateDocument({
             ...stateDocument, [e.target.name]: e.target.value
         });
-       // console.log(stateDocument)
     }
 
     const action = (e) => {
@@ -80,7 +67,6 @@ export default function Home() {
 
 
     const onChange = (value) => {
-        //console.log(value)
         if (value) {
             setBorder("")
         } else {
@@ -90,7 +76,7 @@ export default function Home() {
 
     return (
         <>
-            <Layout>                
+            <Layout>
                 <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
                     <div className="max-w-md w-full space-y-8">
                         <div>
@@ -99,8 +85,8 @@ export default function Home() {
                                 src={banner.src}
                                 alt="bannerNoroeste"
                             />
-                            <h2 className="mt-6 font-mono md:font-bold text-center text-2xl md:text-3xl lg:text-4xl font-extrabold text-gray-900">Validar Documento</h2>
-                            <p className='text-center font-mono text-gray-900 font-bold'>A continuacion podra verificar la veracidad del documento expedido por la REGIONAL NOROESTE</p>
+                            <h2 className="mt-6 font-mono md:font-bold text-center text-2xl md:text-3xl lg:text-4xl font-extrabold text-gray-700">Validar Documento</h2>
+                            <p className='text-center font-mono text-gray-700 font-bold'>A continuacion podra verificar la veracidad del documento expedido por la REGIONAL NOROESTE</p>
                         </div>
                         <form className="mt-8 space-y-6" onSubmit={action} >
                             <input type="hidden" name="remember" defaultValue="true" />

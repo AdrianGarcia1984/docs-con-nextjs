@@ -9,36 +9,28 @@ import Pagination from 'rc-pagination';
 import Router, { useRouter } from 'next/router';
 import Swal from 'sweetalert2';
 import banner from '../public/bannerNoroestePresentacion.png'
-//import { useSession } from 'next-auth/react';
+import {getTokenCookie} from '../src/libs/cookieAuth'
+//redux
+import { getUser } from '../src/store/slice/user'
+import { useDispatch, useSelector } from 'react-redux'
 
 
 
 const controlDocumentos = () => {
+  
   const router = useRouter();
-  const { user, isUserAuthenticated } = useUser();
+  const { user} = useUser();
   const [listarDocumento, setListarDocumento] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState("");
   const [disableBoton, setDisableBoton] = useState(false);
-  //const {data:session} = useSession()
-  //console.log(session)
-  //const Token = session.accessToken
-
-  //problema al recargar la pagina no me toma el context de nuevo
-  //const options = { headers: { authorization: "Bearer " + user.token } }
-  const usuario = '';
-  const options = '';
-  //solucion al problema de la recarga tomar el token del localStorage, pero hay un problema con next y se soluciona con este codigo
-  if (typeof window !== 'undefined') {
-    // Perform localStorage action
-    usuario = JSON.parse(localStorage.getItem('usuario'))
-    !usuario && router.push('/')
-    options = { headers: { authorization: "Bearer " + user.token } }
-
-  }
-
-  //const options = {headers: {authorization: 'Bearer '+ usuario.token}}
+  const tokenCookie =getTokenCookie()
+  const options = { headers: { authorization: "Bearer " + tokenCookie } }
+  
+  //redux pruebas
+  const { roles: rolUsuario } = useSelector(state => state.users)
+  const dispatch = useDispatch()
 
   const listarDocumentos = useCallback(async (pageCurrent) => {
     try {
@@ -83,15 +75,12 @@ const controlDocumentos = () => {
 
 
   useEffect(() => {
-    //options = { headers: { authorization: "Bearer " + usuario.token } };
-    isUserAuthenticated() ? router.push("/controlDocumentos") : router.push("/");
+    dispatch(getUser())
     listarDocumentos(page);
-
-  }, [listarDocumentos, page])
+  }, [dispatch, listarDocumentos, page])
 
 
   const onchangePage = (page) => {
-    console.log(page)
     listarDocumentos(page);
   }
 
@@ -128,7 +117,7 @@ const controlDocumentos = () => {
       router.push("/controlDocumentos") //redireccion a controlDocumentos
     } catch (error) {
       setLoading(false)
-      console.log(error.response)
+      //console.log(error.response)
       if (!error.response.data.ok) {
         error.response.data.ok === false && (setDisableBoton(false))
         return Swal.fire({
@@ -175,7 +164,9 @@ const controlDocumentos = () => {
                           </small></p>
                           <div className='justify-content-md-start'>
                             <a type='button' className='py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-sky-900 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-900 m-2' onClick={() => editarDocumento(item._id)}><i className='fas fa-edit me-1'></i>editar</a>
-                            <a type='button' className=' py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-900 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-900 text-decoration-none m-2' onClick={() => borrarDocumento(item._id)}><i className='fas fa-trash me-1'></i>borrar</a>
+                            {rolUsuario==='admin'&&
+                              
+                              <a type='button' className=' py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-900 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-900 text-decoration-none m-2' onClick={() => borrarDocumento(item._id)}><i className='fas fa-trash me-1'></i>borrar</a>}
                           </div>
                         </div>
                       </div>
@@ -209,3 +200,34 @@ const controlDocumentos = () => {
 }
 
 export default controlDocumentos
+
+// export const getServerSideProps = async()=>{
+//   const { token: tokenUsuario } = useSelector(state => state.users)
+//   const dispatch = useDispatch()
+//   const { user, isUserAuthenticated } = useUser();
+//   const usuario = '';
+//   console.log(tokenUsuario)
+//   //solucion al problema de la recarga tomar el token del localStorage, pero hay un problema con next y se soluciona con este codigo
+//   if (typeof window !== 'undefined') {  // Perform localStorage action
+//     usuario = JSON.parse(localStorage.getItem('usuarioRedux'))
+//     console.log('desde getserver')    
+//   }
+//   useEffect(() => {
+//     dispatch(getUser())
+//     usuario = JSON.parse(localStorage.getItem('usuarioRedux'))
+//   }, [])
+  
+//   if(!user)return{
+//     redirect:{
+//       destination:'/',
+//       permanent:true
+//     }
+//   }
+//  // console.log(usuario)
+//   return{
+//     props:{
+//       usuario:tokenUsuario
+//     }
+//   }
+
+// }

@@ -1,28 +1,35 @@
 import axios from "axios";
 import Swal from "sweetalert2";
 import React, { createContext, useEffect, useState, useContext } from "react";
-import { serialize } from "cookie";
+//import { serialize } from "cookie";
+import { getUser, logUser, deleteUser } from '../store/slice/user'
+import { useDispatch, useSelector } from 'react-redux'
+//intento con cookie
+import {setTokenCookie, removeTokenCookie} from '../libs/cookieAuth'
 
 
 
 
 const UserContext = createContext();
 //estado inicial para el usuario
-const initialState = { login: false, token: "", nombre: "", apellido: "", id: "" };
+const initialState = { login: false, token: "", nombre: "", apellido: "", id: "",identificacion:'', roles:'' };
 
 export const UserProvider = (props) => {
     //inicializar estados
     const [user, setUser] = useState(initialState);
     const [loading, setLoading] = useState(false);
+    //reudx
+    const { token } = useSelector(state => state.users)
+    const dispatch = useDispatch()
 
     //loginUser para iniciar sesion
     //(user para capturar datos de usuario, history para mover lo del usuario)
 
-    const loginUser = async (user, router) => {
+    const loginUser = async (user, router) => {  
+
         try {
             setLoading(true);
             const { data } = await axios.post("api/usuario/login", user);
-            console.log(data)
             setLoading(false);
             if (data.ok) {
                 const userLogin = {
@@ -32,20 +39,12 @@ export const UserProvider = (props) => {
                     apellido: data.apellido,
                     roles: data.roles,
                     token: data.token,
+                    identificacion:data.identificacion,
                 }
-                //  const serialised = serialize('miCookie', data.token, {
-                //      httpOnly: true,
-                //      secure: process.env.NODE_ENV !== 'development',
-                //      sameSite: 'strict',
-                //      maxAge: 60 * 60 * 24 * 30,
-                //      //path: '/'
-                //  });
-                // console.log('serialized ',serialised)
-                //res.setHeader('Set-Cookie', serialised)
-
+                setTokenCookie(data.token)
                 localStorage.setItem('usuario', JSON.stringify(userLogin));
                 setUser(userLogin);
-
+                dispatch(getUser())
                 Swal.fire({
                     icon: 'success',
                     title: data.mensaje,
@@ -53,15 +52,22 @@ export const UserProvider = (props) => {
                     timer: 1500,
                 });
                 //router para mover al usuario por las rutas  
-                //router.push('/controlDocumentos')
-                (userLogin.roles==='admin') && router.push('/controlDocumentos');
-                //(userLogin.roles[0].name==='vendedor') && router('/clientes');
-                //(userLogin.roles[0].name==='bodega') && router('/productos');
-                //(userLogin.roles[0].name==='THumano') && router('/usuarios');
+                router.push('/controlDocumentos')
             }
         } catch (error) {
             setLoading(false);
-            console.log(error.response)
+            if (error.response === undefined) {
+                //console.log('error')
+                return Swal.fire({
+                    icon: 'error',
+                    title: 'Upss, parece que nuestro servidor no responde, intentelo mas tarde, o contacte a soporte tecnico',
+                    showConfirmButton: true,
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: 'rgb(12 74 110)',
+                    //timer: 2500,
+                });
+            }
+            //console.log(error.response)
             if (!error.response.data.ok) {
                 return Swal.fire({
                     icon: 'error',
@@ -73,12 +79,16 @@ export const UserProvider = (props) => {
             console.log('error en loginUser, ', error.mensaje);
         }
 
-    };    
+    };
 
     //si se cierra el navegador para que se vuelva a autologuear usando useEfect
     useEffect(() => {
-        const initial = JSON.parse(localStorage.getItem("usuario"))
-        initial ? initial.login && setUser(initial) : setUser(initialState);
+        (async () => {
+            const initial = await JSON.parse(localStorage.getItem("usuario"))
+            initial ? initial.login && setUser(initial) : setUser(initialState);
+        })();
+        // const initial = JSON.parse(localStorage.getItem("usuario"))
+        // initial ? initial.login && setUser(initial) : setUser(initialState);
     }, []);
 
     //registerUser para registrar nuevo usuario
@@ -138,19 +148,25 @@ export const UserProvider = (props) => {
     }
     //cerrar sesion
     const exit = () => {
-        setUser(initialState);        
+        setUser(initialState);
         localStorage.removeItem('usuario');
+        removeTokenCookie()
+        dispatch(deleteUser())
         //router.push("/");
     }
 
     const isUserAuthenticated = () => {
+        setLoading(true)
         const initial = JSON.parse(localStorage.getItem("usuario"))
-        if (!user.token||!initial.token) {
-            console.log(user.token)
-          return false;
+        if (initial===null || !initial.token)
+        {
+            //console.log(user.token)
+            setLoading(false)
+            return false;
         }
+        setLoading(false)
         return true
-       };
+    };
 
     const value = {
         user,

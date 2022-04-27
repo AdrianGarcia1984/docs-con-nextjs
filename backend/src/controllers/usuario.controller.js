@@ -114,7 +114,7 @@ usuarioCtrl.login = async (req, res) => {
                 _id: usuario._id,
                 nombre: usuario.nombre,
                 apellido: usuario.apellido,
-                //password: usuario.password,
+                identificacion: usuario.identificacion,
                 roles: usuario.roles,
                 token: token// jwt.sign({ _id: usuario._id, name: usuario.nombre }, process.env.TOKENPS, { expiresIn: 300 }),
             })

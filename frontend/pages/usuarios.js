@@ -1,31 +1,28 @@
 import React, { useState, useEffect } from 'react'
 import { Layout } from '../component/Layout'
 import { useUser } from '../src/context/userContext';
-import Router, {useRouter} from 'next/router';
+import Router, { useRouter } from 'next/router';
 import { Loading } from '../component/Loading';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import Link from 'next/link'
+import { getTokenCookie } from '../src/libs/cookieAuth'
 import banner from '../public/bannerNoroestePresentacion.png'
+import { getUser } from '../src/store/slice/user'
+import { useDispatch, useSelector } from 'react-redux'
 
 const usuarios = () => {
-    const router = useRouter();
     const [usuarios, setUsuarios] = useState([]);
     const [role, setRole] = useState([]);
     const initialState = { id: "", identificacion: "", roles: '', password: "" }
-    const { user, loading, isUserAuthenticated } = useUser();
+    const { user, loading } = useUser();
     const [load, setLoad] = useState(false);
-    //const options = { headers: { authorization: "Bearer " + user.token } }
-    const usuario= '';
-    const options = '';
-    //solucion al problema de la recarga tomar el token del localStorage, pero hay un problema con next y se soluciona con este codigo
-    if (typeof window !== 'undefined') {
-      // Perform localStorage action
-      usuario = JSON.parse(localStorage.getItem('usuario'))
-      !usuario && router.push('/')
-      options = { headers: { authorization: "Bearer " + user.token } }
-  
-    }
+    const tokenCookie = getTokenCookie()
+    const options = { headers: { authorization: "Bearer " + tokenCookie } }
+
+    //redux pruebas
+    const { token: tokenUsuario } = useSelector(state => state.users)
+    const dispatch = useDispatch()
 
     const listarUsuarios = async () => {
         try {
@@ -41,14 +38,14 @@ const usuarios = () => {
             if (error.response === undefined) {
                 //console.log('error')
                 return Swal.fire({
-                  icon: 'error',
-                  title: 'Upss, parece que nuestro servidor no responde, intentelo mas tarde, o contacte a soporte tecnico',
-                  showConfirmButton: true,
-                  confirmButtonText: 'OK',
-                  confirmButtonColor: 'rgb(12 74 110)',
-                  //timer: 2500,
+                    icon: 'error',
+                    title: 'Upss, parece que nuestro servidor no responde, intentelo mas tarde, o contacte a soporte tecnico',
+                    showConfirmButton: true,
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: 'rgb(12 74 110)',
+                    //timer: 2500,
                 });
-              }
+            }
             if (!error.response.data.ok) {
                 return Swal.fire({
                     icon: 'error',
@@ -108,15 +105,14 @@ const usuarios = () => {
     }
 
     useEffect(() => {
+        dispatch(getUser())
         listarUsuarios()
-        //console.log(isUserAuthenticated())
-        isUserAuthenticated() ? router.push("/usuarios") : router.push("/");
         // eslint-disable-next-line
     }, []);
 
     return (
         <Layout>
-            {loading||load ? <Loading /> :
+            {loading || load ? <Loading /> :
                 <>
                     <div className='d-grid d-md-flex justify-content-md-start'>
                         <img
@@ -125,9 +121,9 @@ const usuarios = () => {
                             alt="banner noroeste"
                         />
                     </div>
-                        <div className='justify-content-center d-flex '>
-                            <h2 className='m-2 font-mono font-bold justify-content-center text-center text-gray-700 xs:font-ligth text-2xl md:text-3xl lg:text-4xl'>modulo control usuarios</h2>
-                        </div>
+                    <div className='justify-content-center d-flex '>
+                        <h2 className='m-2 font-mono font-bold justify-content-center text-center text-gray-700 xs:font-ligth text-2xl md:text-3xl lg:text-4xl'>modulo control usuarios</h2>
+                    </div>
                     <div className="d-grid gap-3 d-md-flex justify-content-md-start m-3">
                         <Link className="btn btn-primary me-md-2" type="button" href="/registrar"><a className='text-decoration-none text-white btn btn-primary'>Nuevo usuario</a></Link>
                     </div>
